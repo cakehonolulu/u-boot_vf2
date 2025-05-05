@@ -26,6 +26,18 @@ void spl_perform_fixups(struct spl_image_info *spl_image)
 	fdt_fixup_memory(spl_image->fdt_addr, 0x40000000, gd->ram_size);
 }
 
+int spl_parse_board_header(struct spl_image_info *spl_image, const void *image_header, size_t size)
+{
+    spl_image->size = 0x4 << 22;
+
+    spl_image->entry_point = 0x40000000;
+    spl_image->load_addr = 0x40000000;
+    spl_image->os = IH_OS_U_BOOT;
+    spl_image->name = "U-Boot";
+
+    return 0;
+}
+
 static void jh7110_jtag_init(void)
 {
 	/* nTRST: GPIO36 */

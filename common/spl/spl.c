@@ -775,6 +775,24 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 		hang();
 	}
 
+	/*
+	   HACK
+
+	   The following line is absurd to have, but apparently, when using u-boot's
+	   SPL, on the VisionFive 2 target it can't find the FDT inside the binary for
+	   some, yet-to-be-debugged reason.
+
+	   The temporal fix is to avoid a Load Access Fault (Null pointer set by the memset of
+	   &spl_image) so that it doesn't crash.
+
+	   The way I personally do use to find  the offset to add to the base address, is to
+	   compile u-boot targetting VF2 and then issuing:
+
+	   hexdump -C spl/u-boot-spl.bin | grep "d0 0d fe ed" -B1 -A1
+
+	   This will let you take a peek at the offset the FDT header is, and thus, it's start.
+	*/
+	spl_image.fdt_addr = (void *)(0x8000000 + 0x000222e0);
 	spl_perform_fixups(&spl_image);
 
 	os = spl_image.os;
